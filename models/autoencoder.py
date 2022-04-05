@@ -18,7 +18,7 @@ class normalAE(nn.Module):
         self.encoder_layers = []
         for i in range(len(self.encoder_topology)-1):
             layer = nn.Linear(self.encoder_topology[i],self.encoder_topology[i+1])
-            torch.nn.init.xavier_normal_(layer.weight)  ## weight initialisation
+            torch.nn.init.kaiming_normal_(layer.weight)  ## weight initialisation - He init
             self.encoder_layers.append(layer)
             self.encoder_layers.append(nn.PReLU())
             self.encoder_layers.append(nn.BatchNorm1d(self.encoder_topology[i+1])) ## add this for better training?
@@ -29,7 +29,7 @@ class normalAE(nn.Module):
         self.decoder_layers = []
         for i in range(len(self.decoder_topology)-1):
             layer = nn.Linear(self.decoder_topology[i],self.decoder_topology[i+1])
-            torch.nn.init.xavier_uniform_(layer.weight)  ### weight initialisation
+            torch.nn.init.kaiming_normal_(layer.weight)  ### weight initialisation - He init
             self.decoder_layers.append(layer)
             self.decoder_layers.append(nn.PReLU())
         self.decoder_layers[-1] = nn.Sigmoid() ### replace activation of final layer with Sigmoid()
