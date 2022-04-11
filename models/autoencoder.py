@@ -71,12 +71,13 @@ class methVAE(nn.Module):
             layer = nn.Linear(self.encoder_topology[i],self.encoder_topology[i+1])
             torch.nn.init.xavier_normal_(layer.weight)  ## weight initialisation
             self.encoder_layers.append(layer)
-            self.encoder_layers.append(nn.PReLU())
+            #self.encoder_layers.append(nn.PReLU())
+            self.encoder_layers.append(nn.ReLU())
         self.encoder = nn.Sequential(*self.encoder_layers)
         
         ### Latent space        
-        self.fc_mu = nn.Sequential(nn.Linear(self.latentSize, self.latentSize), nn.BatchNorm1d(self.latentSize)) ### added BatchNorm because it seems to improve training
-        self.fc_var = nn.Sequential(nn.Linear(self.latentSize, self.latentSize), nn.BatchNorm1d(self.latentSize)) ### added BatchNorm because it seems to improve training
+        self.fc_mu = nn.Sequential(nn.Linear(self.latentSize, self.latentSize))#, nn.BatchNorm1d(self.latentSize)) ### added BatchNorm because it seems to improve training
+        self.fc_var = nn.Sequential(nn.Linear(self.latentSize, self.latentSize))#, nn.BatchNorm1d(self.latentSize)) ### added BatchNorm because it seems to improve training
 
         ### Define decoder
         self.decoder_topology = [self.latentSize] + self.hidden_layer_encoder_topology[::-1] + [self.inputDim]
@@ -85,7 +86,8 @@ class methVAE(nn.Module):
             layer = nn.Linear(self.decoder_topology[i],self.decoder_topology[i+1])
             torch.nn.init.xavier_uniform_(layer.weight)  ### weight initialisation
             self.decoder_layers.append(layer)
-            self.decoder_layers.append(nn.PReLU())
+            #self.decoder_layers.append(nn.PReLU())
+            self.decoder_layers.append(nn.ReLU())
         self.decoder_layers[-1] = nn.Sigmoid() ### replace activation of final layer with Sigmoid()
         self.decoder = nn.Sequential(*self.decoder_layers)
     
@@ -100,6 +102,10 @@ class methVAE(nn.Module):
         mu = self.fc_mu(hidden)
         log_var = self.fc_var(hidden)
         return mu, log_var
+
+    def get_hidden(self, x):
+        hidden = self.encoder(x)
+        return hidden
     
     def decode(self, z):
         x_hat = self.decoder(z)

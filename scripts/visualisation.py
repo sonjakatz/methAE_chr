@@ -1,10 +1,11 @@
 import numpy as np
-import umap.umap_ as umap
 import matplotlib.pyplot as plt
 import torch
 plt.style.use('default')
 
 def plot_latentSpace(latentSpace, title="UMAP projection of latent space"):
+    import umap.umap_ as umap
+    
     plt.rcParams.update({'font.size': 18})
     reducer = umap.UMAP()
     print("Doing embedding...")
@@ -22,11 +23,11 @@ def plot_cpg_reconstruction(model, data_tensor, title="Reconstruction of random 
     plt.rcParams.update({'font.size': 18})
     
     model.eval()
-    orig = data_tensor.detach().numpy()
+    orig = data_tensor.cpu().detach().numpy()
     recon = model(data_tensor)
     # check if VAE or AE was used
     if isinstance(recon, tuple):
-        recon = recon[0].detach().numpy()
+        recon = recon[0].cpu().detach().numpy()
     else:
         recon = recon.detach().numpy()
     r2 = []
