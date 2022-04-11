@@ -1,6 +1,7 @@
 import numpy as np
 import umap.umap_ as umap
 import matplotlib.pyplot as plt
+import torch
 plt.style.use('default')
 
 def plot_latentSpace(latentSpace, title="UMAP projection of latent space"):
@@ -39,3 +40,15 @@ def plot_cpg_reconstruction(model, data_tensor, title="Reconstruction of random 
     ax.set_title(title)
     plt.show()
         
+def plot_activations_latSpace(model, data_tensor, title="Insert title"):
+    with torch.no_grad():
+        latSpace = model.generate_embedding(data_tensor).detach().numpy()
+
+    fig, ax = plt.subplots(figsize=(16,6))
+    ax.boxplot(latSpace)
+    ax.hlines(0, 0, latSpace.shape[1]+1, color="red", alpha=0.5, linestyles="dashed")
+    ax.set_title(title)
+    plt.xticks(rotation = 90) 
+    ax.set_xlabel("AE latent dimension")
+    ax.set_ylabel("Activation")
+    plt.show()

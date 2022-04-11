@@ -10,10 +10,10 @@ class prepareDataLoader_fromPkl(Dataset):
         with open(file, "rb") as f: dic = pickle.load(f)
 
         x = dic['beta'].values
-        y = dic['pheno']['disease'].values
-        # Encode y labels
-        le = preprocessing.LabelEncoder()
-        y = le.fit_transform(y)
+        y = dic['pheno']['Age'].values
+        # # Encode y labels
+        # le = preprocessing.LabelEncoder()
+        # y = le.fit_transform(y)
         
         self.x_tensor=torch.tensor(x,dtype=torch.float32)
         self.y_tensor=torch.tensor(y,dtype=torch.float32)

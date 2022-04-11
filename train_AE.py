@@ -28,6 +28,7 @@ def loadData(PATH_train, PATH_val, batch_size=64):
     
     return train_dataset, train_loader, val_dataset, val_loader
 
+
 def main():
     PATH_data = "data/"
     PATH_train = os.path.join(PATH_data, args.train_file)
@@ -50,7 +51,7 @@ def main():
         criterion=nn.MSELoss(reduction="sum"),
         n_epochs=args.n_epochs, 
         lr=args.learning_rate,
-        patienceEarlyStopping=10)
+        patienceEarlyStopping=args.patienceEarlyStopping)
          
     
 if __name__ == "__main__":
@@ -63,6 +64,7 @@ if __name__ == "__main__":
     parser.add_argument('--latentSize', type=int)
     parser.add_argument('--learning_rate', type=float, default=1e-3)
     parser.add_argument('--n_epochs', type=int, default=500)
+    parser.add_argument('--patienceEarlyStopping', type=int, default=10)
     
     args = parser.parse_args()
     main()
