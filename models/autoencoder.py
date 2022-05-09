@@ -14,14 +14,21 @@ class normalAE(nn.Module):
         self.latentSize = latentSize
 
         ### Define encoder
-        self.encoder_topology = [self.inputDim] + self.hidden_layer_encoder_topology + [self.latentSize]
+        self.encoder_topology = [self.inputDim] + self.hidden_layer_encoder_topology
         self.encoder_layers = []
         for i in range(len(self.encoder_topology)-1):
             layer = nn.Linear(self.encoder_topology[i],self.encoder_topology[i+1])
             torch.nn.init.kaiming_normal_(layer.weight)  ## weight initialisation - He init
             self.encoder_layers.append(layer)
+            self.encoder_layers.append(nn.Dropout(p=0.3))
             self.encoder_layers.append(nn.PReLU())
             self.encoder_layers.append(nn.BatchNorm1d(self.encoder_topology[i+1])) ## add this for better training?
+        ## add latent layer
+        layer = nn.Linear(self.encoder_topology[-1],self.latentSize)
+        torch.nn.init.kaiming_normal_(layer.weight)  ## weight initialisation - He init
+        self.encoder_layers.append(layer)
+        self.encoder_layers.append(nn.PReLU())
+        #
         self.encoder = nn.Sequential(*self.encoder_layers)
         
         ### Define decoder
@@ -51,6 +58,7 @@ class normalAE(nn.Module):
         z = self.encode(x)
         x_hat = self.decode(z)
         return x_hat
+            
     
     
     
