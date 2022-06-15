@@ -14,13 +14,13 @@ from models.autoencoder import normalAE
 from scripts.train_EarlyStopping import train_AE
 
 def loadData(PATH_train, PATH_val, batch_size=64):
-    train_dataset = prepareDataLoader_fromPkl(PATH_train)
+    train_dataset = prepareDataLoader_fromPkl(PATH_train, colName="SMOKING")
     train_loader = DataLoader(train_dataset,
                               batch_size=batch_size,
                               shuffle=True, 
                               num_workers=8)
 
-    val_dataset = prepareDataLoader_fromPkl(PATH_val)
+    val_dataset = prepareDataLoader_fromPkl(PATH_val, colName="SMOKING")
     val_loader = DataLoader(val_dataset,
                             batch_size=batch_size,
                             shuffle=True, 

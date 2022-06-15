@@ -1,8 +1,15 @@
 
-Data is here: 
+Data age is here: 
 
 /data/scratch/skatz/PROJECTS/methylnet/1_healthyVAE/data/GSE87571/train_val_test_sets
 
 chr22_overlap_test_methyl_array.pkl
 chr22_overlap_train_methyl_array.pkl
 chr22_overlap_val_methyl_array.pkl
+
+
+Data for smoking is here: 
+/home/sonja/PROJECTS/VAE_methylation/PyMethylProcess/GSE50660
+
+pheno.csv
+chr22_probes.csv

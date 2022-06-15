@@ -5,12 +5,12 @@ import pickle
 from sklearn import preprocessing
 
 class prepareDataLoader_fromPkl(Dataset):
-    def __init__(self,file):
+    def __init__(self,file, colName):
         
         with open(file, "rb") as f: dic = pickle.load(f)
 
         x = dic['beta'].values
-        y = dic['pheno']['Age'].values
+        y = dic['pheno'][colName].values
         # # Encode y labels
         # le = preprocessing.LabelEncoder()
         # y = le.fit_transform(y)
