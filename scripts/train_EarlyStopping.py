@@ -230,6 +230,96 @@ def train_AE(logName,
     # Plot graph of network
     writer.add_graph(model, x)
     writer.close()
+    
+###################################################################################################
+###################################################################################################    
+    
+def train_AE_l1reg(logName,
+             model, 
+             train_loader, 
+             val_loader,
+             criterion=nn.MSELoss(reduction="sum"),
+             n_epochs=100,
+             lr=1e-3,
+             patienceEarlyStopping=7):
+    
+    ### Settings for logs
+    outPath= f"logs/{logName}/checkpoint"
+    os.makedirs(outPath, exist_ok=True)
+    writer = SummaryWriter(f"logs/{logName}")
+    print(f"\t\tLogging to {outPath}")
+    
+    ### Optimizer
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    
+    ### initialize the early_stopping object
+    early_stopping = EarlyStopping(patience=patienceEarlyStopping, verbose=True, path=f"{outPath}/stateDictModel.pth")
+    
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    print(device)
+    model.to(device)
+    
+    model.train()
+    for epoch in range(1,n_epochs+1):
+        ### Training loop
+        loss_train = 0
+        for batch_idx, data in enumerate(train_loader):
+            model.train()
+            x, y = data[0].to(device), data[1].to(device)
+            optimizer.zero_grad()
+            x_hat = model(x)
+            loss = lossFun_recon_loss(x, 
+                                      x_hat,  
+                                      recon_loss_function = criterion)
+            ### add L1 regularisation loss
+            l1_penalty = nn.L1Loss(size_average=False)
+            reg_loss = 0
+            for param in model.parameters():
+                reg_loss += l1_penalty(param)
+            factor_lambda = 0.00005  # value taken from example by medium.com
+            loss + =reg_loss*factor_lambda
+            ###
+            
+            loss.backward()
+            optimizer.step()
+            loss_train += loss.item()
+        
+        ### Validation loop
+        loss_val = 0
+        for data in val_loader:
+            model.eval()
+            x, y = data[0].to(device), data[1].to(device)
+            x_hat = model(x)
+            loss = lossFun_recon_loss(x, 
+                                      x_hat,  
+                                      recon_loss_function = criterion)
+            loss_val += loss.item()
+                    
+        print(f"Epoch: {epoch}")
+        print(f'Training Loss: {round(loss_train, 3)}')
+        print(f'Validation Loss: {round(loss_val, 3)}')
+            
+        ### Logging per epoch
+        writer.add_scalar('Train - Loss', loss_train, epoch)
+        writer.add_scalar('Val - Loss', loss_val, epoch)
+        
+        
+        # early_stopping needs the validation loss to check if it has decresed, 
+        # and if it has, it will make a checkpoint of the current model
+        early_stopping(loss_val, model)
+        
+        if early_stopping.early_stop:
+            print("Early stopping")
+            break        
+    # load the last checkpoint with the best model
+    model.load_state_dict(torch.load(f"{outPath}/stateDictModel.pth"))
+    ### Save final (best) model
+    torch.save(model, f"{outPath}/trainedModel.pth")
+    
+    ### More logging
+    # Plot graph of network
+    writer.add_graph(model, x)
+    writer.close()    
      
 ###################################################################################################
 ###################################################################################################
