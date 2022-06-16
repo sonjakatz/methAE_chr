@@ -11,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from data.prepareData import prepareDataLoader_fromPkl, prepareDataLoader_fromTensor
 from models.autoencoder import normalAE
-from scripts.train_EarlyStopping import train_AE
+from scripts.train_EarlyStopping import train_AE, train_AE_l1reg
 
 def loadData(PATH_train, PATH_val, batch_size=64):
     train_dataset = prepareDataLoader_fromPkl(PATH_train, colName="Age")
